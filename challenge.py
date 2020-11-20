@@ -1,11 +1,11 @@
+import getopt
+import sys
+
 import georasters as gr
-import os
-import matplotlib.pyplot as plt
-from dms2dec.dms_convert import dms2dec
+import numpy as np
 import plotly.graph_objects as go
 import pyproj
-import numpy as np
-import sys, getopt
+from dms2dec.dms_convert import dms2dec
 
 
 def main(argv):
@@ -22,17 +22,20 @@ def main(argv):
         elif opt in ("-i", "--ifile"):
             inputfile = arg
 
+    if inputfile == '':
+        print('challenge.py -i <inputfile>')
+        sys.exit(2)
     print('Welcome to my python challenge CLI program to plot a DSM given a set of coordinates in DMS')
 
     # Read the GeoTiff file and extract properties
-    raster = os.path.join(os.path.dirname(os.path.abspath(__file__)), inputfile)
+    # raster = os.path.join(os.path.dirname(os.path.abspath(__file__)), inputfile)
     # raster = os.path.join(DATA, inputfile)
-    info = gr.get_geo_info(raster)
+    info = gr.get_geo_info(inputfile)
     crs = info[4]
     crs_name = crs.GetAttrValue('projcs')
     units = crs.GetAttrValue("PROJCS|UNIT", 0)
     crs_authority = [crs.GetAttrValue("PROJCS|AUTHORITY", 0), crs.GetAttrValue("PROJCS|AUTHORITY", 1)]
-    complete_file = gr.from_file(raster)
+    complete_file = gr.from_file(inputfile)
 
     # Ask user to input latitude value in DMS and calculate decimal value
     print('Please input the coordinates')
